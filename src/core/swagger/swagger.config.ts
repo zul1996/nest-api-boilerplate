@@ -6,7 +6,14 @@ export function setupSwagger(app: INestApplication) {
     .setTitle('Nest API Boilerplate')
     .setDescription('API Documentation')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT', // Optional: indicates it's a JWT token
+      },
+      'access-token', // The name to refer to the token in Swagger
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
