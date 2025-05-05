@@ -3,54 +3,48 @@ import {
   Post,
   Body,
   Res,
+  Req,
   UseGuards,
   Get,
-  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
-import { Response } from 'express';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
-import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
-import { ApiResponse } from '@nestjs/swagger';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { Response, Request } from 'express';
+import { ApiTags, ApiCookieAuth, ApiOkResponse, ApiCreatedResponse, ApiBody } from '@nestjs/swagger';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@CurrentUser() user: any) {
+    return { message: 'User profile data', user };
+  }
+
   @Post('login')
-  async login(@Body() loginDto: LoginUserDto, @Res() res: Response) {
-    const tokens = await this.authService.login(loginDto, res);
-    return res.json(tokens);
+  @ApiBody({ type: LoginUserDto })
+  async login(@Body() dto: LoginUserDto, @Res() res: Response) {
+    const result = await this.authService.login(dto, res);
+    return res.json(result);
   }
 
   @UseGuards(RefreshTokenGuard)
+  @ApiCookieAuth('refresh_token')
   @Post('refresh')
-  async refreshTokens(
-    @GetCurrentUser('userId') userId: number,
-    @GetCurrentUser('sessionId') sessionId: string,
-    @Res() res: Response,
-  ) {
-    const tokens = await this.authService.refreshToken(sessionId, userId, res);
-    return res.json(tokens);
+  async refresh(@Req() req: Request, @Res() res: Response) {
+    const result = await this.authService.refresh(req, res);
+    return res.json(result);
   }
-
-  // @Post('register')
-  // async register(
-  //   @Body() dto: CreateUserDto,
-  //   @Res() res: Response, // Gunakan @Res() di sini
-  // ) {
-  //   return this.authService.register(dto, res); // Pastikan res diteruskan ke service
-  // }
 
   @UseGuards(RefreshTokenGuard)
   @Post('logout')
-  async logout(
-    @GetCurrentUser('sessionId') sessionId: string,
-    @Res() res: Response,
-  ) {
-    await this.authService.logout(sessionId, res);
+  async logout(@Req() req: Request, @Res() res: Response) {
+    await this.authService.logout(req, res);
     return res.json({ message: 'Logged out' });
   }
 }

@@ -1,21 +1,23 @@
-import { Module } from "@nestjs/common";
-import { UsersModule } from "../users/users.module";
-import { RedisModule } from "src/common/redis/redis.module";
-import { AuthService } from "./auth.service";
-import { JwtService } from "@nestjs/jwt";
-import { AuthController } from "./auth.controller";
-
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { TokenModule } from './tokens/token.module';
+import { UsersModule } from '../users/users.module';
+import { SessionModule } from './sessions/session.module';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-    imports: [
-        UsersModule,RedisModule
-    ],
-    providers: [
-        AuthService, JwtService
-    ],
-    controllers: [
-        AuthController
-    ],
+  imports: [
+    ConfigModule,
+    JwtModule.register({}),
+    TokenModule,
+    UsersModule,
+    SessionModule,
+  ],
+  providers: [AuthService, JwtAuthGuard],
+  controllers: [AuthController],
+  exports: [AuthService, JwtAuthGuard],
 })
-
 export class AuthModule {}
