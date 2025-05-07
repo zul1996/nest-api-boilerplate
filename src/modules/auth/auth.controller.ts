@@ -29,8 +29,7 @@ export class AuthController {
   @Post('login')
   @ApiBody({ type: LoginUserDto })
   async login(@Body() dto: LoginUserDto, @Res() res: Response) {
-    const result = await this.authService.login(dto, res);
-    return res.json(result);
+    await this.authService.login(dto, res);
   }
 
   @UseGuards(RefreshTokenGuard)

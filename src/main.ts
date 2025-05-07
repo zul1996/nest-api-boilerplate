@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { setupSwagger } from './core/swagger/swagger.config';
+import { setupSwagger } from './config/swagger.config';
 import * as dotenv from 'dotenv';
 import * as cookieParser from 'cookie-parser';
 import { AuditInterceptor } from './common/interceptors/audit.interceptor';

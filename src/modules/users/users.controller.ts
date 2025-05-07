@@ -21,7 +21,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Register a new user' })
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiBody({ type: CreateUserDto })
   async register(@Body() dto: CreateUserDto, @Res() res: Response) {
@@ -45,6 +45,7 @@ export class UsersController {
   }
 
   @Get(':username')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get user by username' })
   async getUserByUsername(@Param('username') username: string): Promise<User> {
     return this.usersService.findByUsername(username);
@@ -52,6 +53,7 @@ export class UsersController {
 
   @Post(':username/update')
   @UseGuards(JwtAuthGuard)
+  @ApiBody({ type: CreateUserDto })
   async updateUser(
     @Param('username') username: string,
     @Body() updateUserDto: CreateUserDto,
