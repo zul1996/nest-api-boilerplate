@@ -1,5 +1,5 @@
 import { EMPTY } from "rxjs";
-import { DbDataType, DbFilterOpr, dbFilterValueType } from "../../form-meta/metada.enum";
+import { DbDataType, DbFilterOpr, dbFilterValueType } from "../enums/metada.enum";
 import { DbFilterOprMeta } from "../types/db-filter-opr-meta.interface";
 
 export const DB_FILTER_OPR_META: Record<DbFilterOpr, DbFilterOprMeta> = {

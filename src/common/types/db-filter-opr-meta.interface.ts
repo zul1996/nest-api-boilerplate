@@ -1,4 +1,4 @@
-import { DbDataType, dbFilterValueType } from "../../form-meta/metada.enum";
+import { DbDataType, dbFilterValueType } from "../enums/metada.enum";
 
 export interface DbFilterOprMeta {
     name: string; // nama operator
