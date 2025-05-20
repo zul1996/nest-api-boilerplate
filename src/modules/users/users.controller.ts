@@ -52,6 +52,7 @@ export class UsersController {
   }
 
   @Post(':username/update')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @ApiBody({ type: CreateUserDto })
   async updateUser(
