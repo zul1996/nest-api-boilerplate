@@ -1,18 +1,14 @@
-import { ApiStringProp } from 'src/common/decorators/api-string-prop.decorator';
+import { ApiFieldProp } from 'src/common/decorators/api-field-prop.decorator';
 import { FieldMeta } from 'src/common/decorators/field-metada.decorator';
 import { DbFilterOpr, fieldVisibility } from 'src/common/enums/metada.enum';
 import { getFilterOprMeta } from 'src/common/utils/db-filter.helper';
 
 export class LoginUserDto {
-  @ApiStringProp({
+  @ApiFieldProp({
+    type: 'string',
     description: 'Username',
     example: 'john_doe',
     required: true,
-    notEmptyMessage: 'Username wajib diisi',
-    minLength: 3,
-    maxLength: 20,
-    regex: /^[a-zA-Z0-9_]+$/,
-    regexMessage: 'Username hanya boleh huruf, angka, dan underscore',
   })
   @FieldMeta({
     label: 'Username',
@@ -28,25 +24,18 @@ export class LoginUserDto {
   })
   username: string;
 
-  @ApiStringProp({
+  @ApiFieldProp({
+    type: 'string',
     description: 'Password',
-    required: true,
     example: 'password123',
-    notEmptyMessage: 'Password wajib diisi',
-    minLength: 8,
-    maxLength: 50,
+    required: true,
+    regex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+    regexMessage:
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number',
   })
   @FieldMeta({
     label: 'Password',
     order: 2,
-    grid: fieldVisibility.Active,
-    download: fieldVisibility.Disabled,
-    detail: fieldVisibility.Active,
-    create: fieldVisibility.Active,
-    update: fieldVisibility.Active,
-    searchable: false,
-    sortable: false,
-    searchOprs: getFilterOprMeta([DbFilterOpr.Eq]),
-  })
+    })
   password: string;
 }
