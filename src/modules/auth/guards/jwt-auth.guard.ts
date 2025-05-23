@@ -1,7 +1,7 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -14,10 +14,12 @@ export class JwtAuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const authHeader = req.headers['authorization'];
 
-    if (!authHeader)
-      throw new UnauthorizedException('Authorization header missing');
+    if (!authHeader || !authHeader.startsWith('Bearer '))
+      throw new UnauthorizedException(
+        'Authorization header malformed or missing Bearer',
+      );
 
-    const [, token] = authHeader.split(' ');
+    const [, token] = authHeader.split(' ')[1];
 
     try {
       const decoded = await this.jwtService.verifyAsync(token, {

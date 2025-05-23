@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { Users } from './entities/user.entity';
 import { ApiResponse, ApiOperation, ApiBody, ApiParam, ApiBearerAuth } from '@nestjs/swagger'; // Updated decorators
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -47,7 +47,7 @@ export class UsersController {
   @Get(':username')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get user by username' })
-  async getUserByUsername(@Param('username') username: string): Promise<User> {
+  async getUserByUsername(@Param('username') username: string): Promise<Users> {
     return this.usersService.findByUsername(username);
   }
 
@@ -58,7 +58,7 @@ export class UsersController {
   async updateUser(
     @Param('username') username: string,
     @Body() updateUserDto: CreateUserDto,
-  ): Promise<User> {
+  ): Promise<Users> {
     return this.usersService.update(username, updateUserDto);
   }
 }

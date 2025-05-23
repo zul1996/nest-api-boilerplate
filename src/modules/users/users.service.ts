@@ -1,21 +1,21 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
-  ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { CreateUserDto, updateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
+import { CreateUserDto, updateUserDto } from './dto/create-user.dto';
+import { Users } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(Users)
+    private readonly userRepository: Repository<Users>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -25,7 +25,7 @@ export class UsersService {
    * @returns User - Pengguna yang baru dibuat
    * @throws ConflictException - Jika username sudah terdaftar
    */
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<Users> {
     // Periksa apakah username sudah ada
     const existingUser = await this.findByUsername(createUserDto.username);
     if (existingUser) {
@@ -49,7 +49,7 @@ export class UsersService {
    * @returns User - Pengguna yang ditemukan
    * @throws NotFoundException - Jika pengguna tidak ditemukan
    */
-  async findByUsername(username: string): Promise<User> {
+  async findByUsername(username: string): Promise<Users> {
     const user = await this.userRepository.findOne({
       where: { username },
       select: ['id', 'username', 'password'], // Pilih hanya kolom yang diperlukan
@@ -69,7 +69,7 @@ export class UsersService {
    * @returns User | null - Pengguna yang valid atau null jika tidak valid
    * @throws UnauthorizedException - Jika kredensial salah
    */
-  async validateUser(username: string, password: string): Promise<User> {
+  async validateUser(username: string, password: string): Promise<Users> {
     // Cari pengguna berdasarkan username
     const user = await this.findByUsername(username);
 
@@ -88,7 +88,7 @@ export class UsersService {
    * @param updateUserDto - Data yang ingin diperbarui
    * @returns User - Pengguna yang telah diperbarui
    */
-  async update(username: string, updateUserDto: updateUserDto): Promise<User> {
+  async update(username: string, updateUserDto: updateUserDto): Promise<Users> {
     const user = await this.findByUsername(username);
 
     if (updateUserDto.password) {

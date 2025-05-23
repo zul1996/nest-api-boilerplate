@@ -7,20 +7,21 @@ export class SessionService {
 
   async store(
     sessionId: string,
-    userId: number,
+    userId: string,
     ttlSeconds: number,
   ): Promise<void> {
     await this.redis.set(
       `refresh_token:${sessionId}`,
-      userId.toString(),
+      userId,
       'EX',
       ttlSeconds,
     );
   }
 
-  async validate(sessionId: string, userId: number): Promise<void> {
+  async validate(sessionId: string, userId: string): Promise<void> {
     const storedUserId = await this.redis.get(`refresh_token:${sessionId}`);
-    if (!storedUserId || parseInt(storedUserId, 10) !== userId) {
+
+    if (!storedUserId || storedUserId !== userId) {
       throw new UnauthorizedException('Invalid refresh session');
     }
   }

@@ -19,7 +19,8 @@ export class RefreshTokenGuard implements CanActivate {
       const decoded = await this.tokenService.verifyRefreshToken(token);
       req.user = decoded;
       return true;
-    } catch {
+    } catch (error){
+      console.error('Refresh token verification failed:', error);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }

@@ -1,10 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { TokenService } from './tokens/token.service';
 import { SessionService } from './sessions/session.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { Response, Request } from 'express';
 import { UsersService } from '../users/users.service';
+import { plainToInstance } from 'class-transformer';
+import { SecUserAndRoleDto } from './dto/sec-user-role.dto';
+import { LoginRespDto } from './dto/login-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +17,13 @@ export class AuthService {
     private readonly sessionService: SessionService,
   ) {}
 
-  async login(dto: LoginUserDto, res: Response) {
+  async login(
+    dto: LoginUserDto,
+  ): Promise<{
+    loginResp: LoginRespDto;
+    refreshToken: string;
+    refreshTtl: number;
+  }> {
     const user = await this.usersService.validateUser(
       dto.username,
       dto.password,
@@ -35,19 +44,38 @@ export class AuthService {
     );
     await this.sessionService.store(sessionId, user.id, refreshTtl);
 
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      path: '/auth/refresh',
-      maxAge: refreshTtl * 1000,
+    const userDto = plainToInstance(SecUserAndRoleDto, {
+      id: user.id,
+      username: user.username,
+      fullName: user.fullName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      role: user.roleUser,
+      isActive: user.isActive,
+      mustChangePasswordFlag: user.mustChangePasswordFlag,
+      lastLoginSuccessTs: user.lastLoginSuccessTs,
+      lastChangePasswordTs: user.lastChangePasswordTs,
     });
 
-    return { accessToken };
+    const loginResp: LoginRespDto = {
+      sessionId,
+      status: 'SUCCESS',
+      user: userDto,
+      warningMessage: '',
+      orgUser: undefined,
+      impersonateFlag: false,
+      jwtToken: accessToken,
+      menu: null,
+    };
+
+    return { loginResp, refreshToken, refreshTtl };
   }
 
-  async refresh(req: Request, res: Response) {
-    const { sub: userId, sessionId } = req.user as { sub: number; sessionId: string };
+  async refresh(
+    user: { sub: string; sessionId: string },
+    res: Response,
+  ): Promise<LoginRespDto> {
+    const { sub: userId, sessionId } = user;
 
     await this.sessionService.validate(sessionId, userId);
 
@@ -62,6 +90,7 @@ export class AuthService {
     });
 
     await this.sessionService.remove(sessionId);
+
     const ttl = this.getExpiryInSeconds(
       process.env.JWT_REFRESH_EXPIRES_IN || '7d',
     );
@@ -75,13 +104,47 @@ export class AuthService {
       maxAge: ttl * 1000,
     });
 
-    return { accessToken };
+    // Bisa ambil user dari service kalau ingin lengkap response, sementara null dulu:
+    return {
+      sessionId: newSessionId,
+      status: 'SUCCESS',
+      warningMessage: null,
+      user: null, // nanti diisi user info kalau perlu
+      orgUser: null, // impersonate juga null dulu
+      impersonateFlag: false,
+      availableImpersonates: null,
+      jwtToken: accessToken,
+      menu: null,
+    };
   }
 
-  async logout(req: Request, res: Response) {
-    const { sessionId } = req.user as { sessionId: string };
-    await this.sessionService.remove(sessionId);
-    res.clearCookie('refresh_token', { path: '/auth/refresh' });
+  async logout(req: Request, res: Response): Promise<void> {
+    try {
+      const { sessionId } = req.user as { sessionId: string };
+
+      if (!sessionId) {
+        throw new UnauthorizedException('Invalid session');
+      }
+
+      await this.sessionService.remove(sessionId);
+
+      res.clearCookie('refresh_token', {
+        path: '/auth/refresh',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+      });
+
+      res.status(200).json({
+        status: 'SUCCESS',
+        message: 'Logged out successfully',
+      });
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to logout');
+    }
   }
 
   private getExpiryInSeconds(exp: string): number {
