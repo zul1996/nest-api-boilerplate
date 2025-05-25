@@ -29,9 +29,9 @@ export class LoginUserDto {
     description: 'Password',
     example: 'password123',
     required: true,
-    regex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-    regexMessage:
-      'Password must contain at least one uppercase letter, one lowercase letter, and one number',
+    // regex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+    // regexMessage:
+    //   'Password must contain at least one uppercase letter, one lowercase letter, and one number',
   })
   @FieldMeta({
     label: 'Password',

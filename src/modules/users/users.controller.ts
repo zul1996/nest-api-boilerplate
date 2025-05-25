@@ -12,7 +12,13 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Users } from './entities/user.entity';
-import { ApiResponse, ApiOperation, ApiBody, ApiParam, ApiBearerAuth } from '@nestjs/swagger'; // Updated decorators
+import {
+  ApiResponse,
+  ApiOperation,
+  ApiBody,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger'; // Updated decorators
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -21,27 +27,32 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('register')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiBody({ type: CreateUserDto })
-  async register(@Body() dto: CreateUserDto, @Res() res: Response) {
-    const existingUser = await this.usersService.findByUsername(dto.username);
-    if (existingUser) {
-      throw new ConflictException('Username already exists');
-    }
+  async register(
+    @Body() createUserDto: CreateUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
 
-    const { accessToken, refreshToken } =
-      await this.usersService.registerUser(dto);
+    console.log('===> Incoming DTO (from client):', createUserDto);
+
+    const { accessToken, refreshToken, user } =
+      await this.usersService.registerUser(createUserDto);
 
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'strict',
+      path: '/auth/refresh',
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/user/refresh-token',
     });
 
-    return { accessToken };
+    const { password, ...userSafe } = user;
+
+    return {
+      status: 'SUCCESS',
+      user: userSafe,
+      jwtToken: accessToken,
+    };
   }
 
   @Get(':username')
