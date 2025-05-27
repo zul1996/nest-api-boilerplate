@@ -40,6 +40,7 @@ export function createBaseControllerDi<T, D>(
     }
 
     @Put(':id')
+    @ApiBody({ type: dtoClass })
     async update(
       @Param('id') id: string,
       @Body() dto: DeepPartial<T>,
