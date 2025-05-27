@@ -1,9 +1,8 @@
-import { IsOptional } from 'class-validator';
 import {
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   Column,
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from 'typeorm';
 
 export abstract class BaseEntity {
@@ -16,11 +15,9 @@ export abstract class BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @IsOptional()
   @Column({ nullable: true, type: 'varchar' })
   createdBy: string | null;
 
-  @IsOptional()
   @Column({ nullable: true, type: 'varchar' })
   updatedBy: string | null;
 }

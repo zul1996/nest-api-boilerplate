@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { MetadataFieldOption } from '../types/metadata-field.interface';
+import { MetadataFieldOption } from '../interface/metadata-field.interface';
 
 export const FIELD_META_KEY = Symbol('field-meta');
 

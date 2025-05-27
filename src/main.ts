@@ -1,10 +1,10 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { setupSwagger } from './config/swagger.config';
-import * as dotenv from 'dotenv';
-import * as cookieParser from 'cookie-parser';
-import { AuditInterceptor } from './common/interceptors/audit.interceptor';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import * as cookieParser from 'cookie-parser';
+import * as dotenv from 'dotenv';
+import { AppModule } from './app.module';
+// import { AuditInterceptor } from './common/interceptors/audit.interceptor';
+import { setupSwagger } from './config/swagger.config';
 
 async function bootstrap() {
   dotenv.config();
@@ -12,7 +12,7 @@ async function bootstrap() {
 
   await app.use(cookieParser());
 
-  app.useGlobalInterceptors(new AuditInterceptor());
+  // app.useGlobalInterceptors(new AuditInterceptor());
 
   app.useGlobalPipes(
     new ValidationPipe({

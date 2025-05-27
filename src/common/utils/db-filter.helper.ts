@@ -1,6 +1,6 @@
 import { DB_FILTER_OPR_META } from '../constants/db-filter-opr-meta.constants';
 import { DbFilterOpr } from '../enums/metada.enum';
-import { DbFilterOprMeta } from '../types/db-filter-opr-meta.interface';
+import { DbFilterOprMeta } from '../interface/db-filter-opr-meta.interface';
 
 // Ambil metadata lengkap dari enum DbFilterOpr
 // export function getFilterOprMeta(opr: DbFilterOpr): DbFilterOprMeta {

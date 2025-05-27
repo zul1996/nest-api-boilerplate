@@ -15,7 +15,7 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiFieldPropOptions,
   ApiFieldType,
-} from '../types/ApiStringPropOptions.interface';
+} from '../interface/ApiStringPropOptions.interface';
 
 /**
  * Custom decorator for API field properties with validation

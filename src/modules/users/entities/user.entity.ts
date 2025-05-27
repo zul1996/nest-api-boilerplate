@@ -52,7 +52,7 @@ export class Users extends BaseEntity {
   @Column({ type: 'timestamp', nullable: true })
   lastTokenFailTs?: Date;
 
-  @Column({ default: false })
+  @Column({ nullable: true })
   mustChangePasswordFlag: boolean;
 
   @Column({ type: 'timestamp', nullable: true })

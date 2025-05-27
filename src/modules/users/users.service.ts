@@ -19,12 +19,6 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) {}
 
-  /**
-   * Membuat pengguna baru dengan hash passwords
-   * @param createUserDto - Data pengguna yang akan dibuat
-   * @returns User - Pengguna yang baru dibuat
-   * @throws ConflictException - Jika username sudah terdaftar
-   */
   async create(
     createUserDto: CreateUserDto,
     createdBy?: string,
@@ -56,18 +50,17 @@ export class UsersService {
       phoneNumber: createUserDto.phoneNumber,
       roleUser: createUserDto.role, // Set default createdBy if not provided
       createdBy: createdBy || 'system',
+      isActive: true, // Set default isActive to true
+      enabled: true, // Set default enabled to true
+      accountExpired: false, // Set default accountExpired to false
+
     });
 
     // Simpan pengguna di database
     return this.userRepository.save(user);
   }
 
-  /**
-   * Mencari pengguna berdasarkan username
-   * @param username - Nama pengguna untuk mencari pengguna
-   * @returns User - Pengguna yang ditemukan
-   * @throws NotFoundException - Jika pengguna tidak ditemukan
-   */
+
   async findByUsername(username: string): Promise<UserEntity> {
     const user = await this.userRepository.findOne({
       where: { username },
@@ -85,13 +78,7 @@ export class UsersService {
     return this.userRepository.findOne({ where: { username } });
   }
 
-  /**
-   * Validasi pengguna berdasarkan username dan password
-   * @param username - Nama pengguna
-   * @param password - Password yang dimasukkan
-   * @returns User | null - Pengguna yang valid atau null jika tidak valid
-   * @throws UnauthorizedException - Jika kredensial salah
-   */
+
   async validateUser(username: string, password: string): Promise<UserEntity> {
     // Cari pengguna berdasarkan username
     const user = await this.findByUsername(username);
@@ -105,12 +92,7 @@ export class UsersService {
     return user;
   }
 
-  /**
-   * Memperbarui informasi pengguna berdasarkan username
-   * @param username - Username pengguna yang ingin diupdate
-   * @param updateUserDto - Data yang ingin diperbarui
-   * @returns User - Pengguna yang telah diperbarui
-   */
+
   async update(
     username: string,
     updateUserDto: updateUserDto,

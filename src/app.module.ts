@@ -5,6 +5,7 @@ import { typeOrmConfig } from './config/typeorm.config';
 import { RedisModule } from './infra/redis/redis.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ProductModule } from './modules/product/product.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from './modules/auth/auth.module';
     RedisModule,
     UsersModule,
     AuthModule,
+    ProductModule
   ],
 })
 export class AppModule {}
