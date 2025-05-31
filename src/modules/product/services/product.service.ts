@@ -16,7 +16,7 @@ export class ProductService extends SimpleBaseService<ProductEntity> {
 
   async approveProduct(id: string, username: string): Promise<ProductEntity> {
     const product = await this.findOne(id);
-    if (!product) throw new Error('Product not found');
+  if (!product) throw new Error('Product not found');
     product.flagAKtif = 1;
     await this.repo.save(product);
     return product;

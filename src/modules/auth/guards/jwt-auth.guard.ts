@@ -19,7 +19,7 @@ export class JwtAuthGuard implements CanActivate {
         'Authorization header malformed or missing Bearer',
       );
 
-    const [, token] = authHeader.split(' ')[1];
+      const token = authHeader.split(' ')[1];
 
     try {
       const decoded = await this.jwtService.verifyAsync(token, {

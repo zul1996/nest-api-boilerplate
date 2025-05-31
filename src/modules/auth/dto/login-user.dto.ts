@@ -20,6 +20,7 @@ export class LoginUserDto {
     update: fieldVisibility.Active,
     searchable: true,
     sortable: true,
+    onCellFilter: true,
     searchOprs: getFilterOprMeta([DbFilterOpr.Eq, DbFilterOpr.Contains]),
   })
   username: string;

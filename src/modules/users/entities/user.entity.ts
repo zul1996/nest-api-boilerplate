@@ -1,6 +1,14 @@
+import { CrudMeta } from 'src/common/decorators/field-metada.decorator';
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Column, Entity } from 'typeorm';
 
+@CrudMeta({
+  title: 'users',
+  idField: 'id',
+  dialog: {
+    supportMaximized: true,
+  }
+})
 
 @Entity('users')
 export class Users extends BaseEntity {

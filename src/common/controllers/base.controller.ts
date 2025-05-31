@@ -29,10 +29,6 @@ export class BaseController<T extends BaseEntity> {
     return this.baseService.findOne(id);
   }
 
-  @Get()
-  async findAll() {
-    return this.baseService.findAll();
-  }
 
   @Delete(':id')
   async delete(
@@ -40,5 +36,10 @@ export class BaseController<T extends BaseEntity> {
     @CurrentUser() user: { username: string },
   ) {
     return this.baseService.delete(id, user.username);
+  }
+
+  @Get('metadata')
+  async getMetadata() {
+    return this.baseService.getMetadata();
   }
 }

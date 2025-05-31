@@ -14,6 +14,8 @@ async function bootstrap() {
 
   // app.useGlobalInterceptors(new AuditInterceptor());
 
+  app.useLogger(['log', 'error', 'warn', 'debug', 'verbose']);
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

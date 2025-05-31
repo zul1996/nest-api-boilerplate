@@ -13,6 +13,7 @@ export const ProductController = createBaseControllerDi<ProductEntity, ProductDt
   'products',
   ProductDto, // misal DTO-nya ProductDto (kelas DTO yang sudah dibuat)
   PRODUCT_SERVICE, // token provider service
+  ProductEntity
 );
 
 @ApiTags('products')
@@ -25,7 +26,7 @@ export class ProductCustomController {
   @ApiBody({ type: ProductDto })
   @Post(':id/approve')
   async approve(
-    @Param('id') id: string,
+  @Param('id') id: string,
     @CurrentUser() user: { username: string },
   ) {
     return this.productService.approveProduct(id, user.username);

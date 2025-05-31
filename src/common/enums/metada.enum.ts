@@ -5,6 +5,7 @@ export enum fieldVisibility {
   Disabled = 'disabled',
 }
 
+
 export enum dbFilterValueType {
   None = 'none',
   One = 'one',
@@ -37,3 +38,5 @@ export enum DbFilterOpr {
   Contains = 'Contains',
   ToDay = 'ToDay',
 }
+
+

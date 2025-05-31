@@ -1,0 +1,219 @@
+[
+  {
+    "title": "Produk",
+    "Field": "Produk",
+    "grid": {
+      "field": [
+        {
+          "name": "index",
+          "order": 0,
+          "align": "left",
+          "label": "No",
+          "field": "index",
+          "sortable": false,
+          "searchable": false,
+          "searchableOprs": [],
+          "visibility": "Active",
+          "onCellFilter": false,
+          "dataType": "Integer",
+          "formInput": null
+        },
+        {
+          "name": "tanggalPermohonan",
+          "order": 1,
+          "align": "left",
+          "label": "Tanggal Surat Permohonan",
+          "field": "tanggalPermohonan",
+          "sortable": true,
+          "searchable": true,
+          "searchOprs": ["Gt", "Lt", "Between", "ToDay"],
+          "visibility": "Active",
+          "onCellFilter": true,
+          "dataType": "Date",
+          "formInput": {
+            "type": "Date",
+            "defVal": null,
+            "params": {
+              "subs": []
+            },
+            "colSize": 12
+          }
+        }
+      ],
+      "defPagination": {
+        "sortBy": "",
+        "descending": false,
+        "page": 0,
+        "size": 10,
+        "filterFIelds": {}
+      }
+    },
+    "dialog": {
+      "title": "Produk",
+      "action": "",
+      "supportMaximized": true,
+      "fullWidth": false,
+      "fullHeight": false,
+      "maximized": true,
+      "cardStyle": ""
+    },
+    "formCreate": {
+      "field": [],
+      "dialog": {
+        "title": "",
+        "action": "",
+        "supportMaximized": false,
+        "fullWidth": false,
+        "fullHeight": false,
+        "maximized": false,
+        "cardStyle": ""
+      }
+    },
+    "formDetail": {
+      "fields": [
+        {
+          "fieldName": "idTrPenjaminan",
+          "label": "ID Penjaminan",
+          "order": 1,
+          "dataType": "Long",
+          "visibility": "Hide",
+          "formInput": {
+            "type": "Number",
+            "defVal": null,
+            "params": {
+              "subs": []
+            },
+            "colSize": 12
+          },
+          "validations": []
+        },
+        {
+          "fieldName": "idDdLob",
+          "label": "LOB",
+          "order": 2,
+          "dataType": "Integer",
+          "visibility": "Hide",
+          "formInput": {
+            "type": "Number",
+            "defVal": null,
+            "params": {
+              "subs": []
+            },
+            "colSize": 12
+          },
+          "validations": []
+        }
+      ],
+      "dialog": {
+        "title": "",
+        "action": "",
+        "supportMaximized": false,
+        "fullWidth": false,
+        "fullHeight": false,
+        "maximized": false,
+        "cardStyle": ""
+      }
+    }
+  }
+]
+ 
+
+{
+  "content": [
+      {
+          "idDdBank": 1,
+          "kodeBank": "494",
+          "namaBank": "PT Bank Rakyat Indonesia Agroniaga Tbk.",
+          "inisialBank": "BANK AGRONIAGA",
+          "flagAktif": 0
+      },
+      {
+          "idDdBank": 2,
+          "kodeBank": "531",
+          "namaBank": "PT Bank Anglomas Internasional",
+          "inisialBank": "BANK AMIN",
+          "flagAktif": 0
+      },
+      {
+          "idDdBank": 3,
+          "kodeBank": "441",
+          "namaBank": "PT Kookmin Bank Tbk.",
+          "inisialBank": "BANK KOOKMIN",
+          "flagAktif": 1
+      },
+      {
+          "idDdBank": 4,
+          "kodeBank": "485",
+          "namaBank": "PT Bank Bumiputera Indonesia Tbk.",
+          "inisialBank": "BANK BUMIPUTERA",
+          "flagAktif": 0
+      },
+      {
+          "idDdBank": 5,
+          "kodeBank": "011",
+          "namaBank": "PT Bank Danamon Indonesia Tbk.",
+          "inisialBank": "BANK DANAMON",
+          "flagAktif": 1
+      },
+      {
+          "idDdBank": 7,
+          "kodeBank": "114",
+          "namaBank": "PT Bank Pembangunan Daerah Jawa Timur ",
+          "inisialBank": "BPD JATIM",
+          "flagAktif": 1
+      },
+      {
+          "idDdBank": 8,
+          "kodeBank": "535",
+          "namaBank": "PT Bank Kesejahteraan Ekonomi ",
+          "inisialBank": "BANK BKE",
+          "flagAktif": 0
+      },
+      {
+          "idDdBank": 9,
+          "kodeBank": "008",
+          "namaBank": "PT Bank Mandiri Tbk.",
+          "inisialBank": "BANK MANDIRI",
+          "flagAktif": 1
+      },
+      {
+          "idDdBank": 10,
+          "kodeBank": "147",
+          "namaBank": "PT Bank Muamalat Indonesia Tbk. ",
+          "inisialBank": "BANK MUAMALAT",
+          "flagAktif": 1
+      },
+      {
+          "idDdBank": 11,
+          "kodeBank": "009",
+          "namaBank": "PT Bank Negara Indonesia Tbk.",
+          "inisialBank": "BANK BNI",
+          "flagAktif": 1
+      }
+  ],
+  "pageable": {
+      "pageNumber": 0,
+      "pageSize": 10,
+      "sort": {
+          "empty": true,
+          "sorted": false,
+          "unsorted": true
+      },
+      "offset": 0,
+      "paged": true,
+      "unpaged": false
+  },
+  "totalPages": 7,
+  "totalElements": 64,
+  "last": false,
+  "size": 10,
+  "number": 0,
+  "sort": {
+      "empty": true,
+      "sorted": false,
+      "unsorted": true
+  },
+  "numberOfElements": 10,
+  "first": true,
+  "empty": false
+}

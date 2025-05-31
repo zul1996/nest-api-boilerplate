@@ -1,6 +1,9 @@
 import { ApiBody, ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { ApiFieldProp } from 'src/common/decorators/api-field-prop.decorator';
+import { FieldMeta } from 'src/common/decorators/field-metada.decorator';
+import { DbFilterOpr, fieldVisibility } from 'src/common/enums/metada.enum';
+import { getFilterOprMeta } from 'src/common/utils/db-filter.helper';
 
 export class CreateUserDto {
   @IsString()
@@ -17,6 +20,19 @@ export class CreateUserDto {
     notEmptyMessage: 'Username cannot be empty',
     required: true,
   })
+  @FieldMeta({
+    label: 'Username',
+    order: 1,
+    grid: fieldVisibility.Active,
+    download: fieldVisibility.Disabled,
+    detail: fieldVisibility.Active,
+    create: fieldVisibility.Active,
+    update: fieldVisibility.Active,
+    searchable: true,
+    sortable: true,
+    onCellFilter: true,
+    searchOprs: getFilterOprMeta([DbFilterOpr.Eq, DbFilterOpr.Contains]),
+  })
   username: string;
 
   @ApiProperty()
@@ -32,10 +48,22 @@ export class CreateUserDto {
     notEmptyMessage: 'Password cannot be empty',
     required: true,
   })
+  @FieldMeta({
+    label: 'Password',
+    order: 2,
+    grid: fieldVisibility.Active,
+    download: fieldVisibility.Disabled,
+    detail: fieldVisibility.Active,
+    create: fieldVisibility.Active,
+    update: fieldVisibility.Active,
+    searchable: true,
+    sortable: true,
+    onCellFilter:true,
+    searchOprs: getFilterOprMeta([DbFilterOpr.Eq, DbFilterOpr.Contains]),
+
+  })
   password: string;
 
-  
-  
   @ApiProperty({ required: false })
   @ApiFieldProp({
     type: 'string',
@@ -45,7 +73,6 @@ export class CreateUserDto {
   })
   fullName?: string;
 
-  
   @ApiProperty({ required: false })
   @ApiFieldProp({
     type: 'string',
@@ -57,8 +84,6 @@ export class CreateUserDto {
   })
   email?: string;
 
-  
-  
   @ApiProperty({ required: false })
   @ApiFieldProp({
     type: 'string',
@@ -70,8 +95,6 @@ export class CreateUserDto {
   })
   phoneNumber?: string;
 
-  
-  
   @ApiProperty({ required: false })
   @ApiFieldProp({
     type: 'string',

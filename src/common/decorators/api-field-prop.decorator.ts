@@ -15,7 +15,7 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiFieldPropOptions,
   ApiFieldType,
-} from '../interface/ApiStringPropOptions.interface';
+} from '../interface/api-string-prop-options.interface';
 
 /**
  * Custom decorator for API field properties with validation
@@ -109,7 +109,7 @@ export function ApiFieldProp(options: ApiFieldPropOptions) {
 /**
  * Maps API field types to Swagger types
  */
-function mapTypeToSwagger(type: ApiFieldType): any {
+function mapTypeToSwagger(type: ApiFieldType): Function {
   switch (type) {
     case 'string':
       return String;
@@ -121,7 +121,7 @@ function mapTypeToSwagger(type: ApiFieldType): any {
     case 'date':
       return Date;
     default:
-      return String;
+      throw new Error(`Unsupported field type for Swagger: ${type}`);
   }
 }
 
