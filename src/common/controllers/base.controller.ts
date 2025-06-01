@@ -4,8 +4,8 @@ import { IBaseService } from "../interface/ibase.service";
 import { CurrentUser } from "src/modules/auth/decorators/current-user.decorator";
 import { Body, Delete, Get, Param, Post, Put } from "@nestjs/common";
 
-export class BaseController<T extends BaseEntity> {
-  constructor(protected readonly baseService: IBaseService<T>) {}
+export class BaseController<T extends BaseEntity,TDto> {
+  constructor(protected readonly baseService: IBaseService<T, TDto>) {}
 
   @Post()
   async create(
@@ -28,7 +28,6 @@ export class BaseController<T extends BaseEntity> {
   async findOne(@Param('id') id: string) {
     return this.baseService.findOne(id);
   }
-
 
   @Delete(':id')
   async delete(

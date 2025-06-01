@@ -15,17 +15,33 @@ import {
   SortInfo,
 } from '../interface/pagination-response.interface';
 import { FilterParsedDto, PaginationRequestDto } from 'src/dto/searcth.dto';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
+import { filterDtoFieldsByVisibility } from '../decorators/field-metada.decorator';
 
 @Injectable()
-export abstract class BaseService<T extends BaseEntity>
-  implements IBaseService<T>
+export abstract class BaseService<T extends BaseEntity, TDto extends Object>
+  implements IBaseService<T, TDto>
 {
+  protected abstract dtoClass: ClassConstructor<TDto>;
+  protected abstract entityClass: new () => T;
+
   constructor(
     protected readonly repo: Repository<T>,
     @InjectRepository(AuditLogEntity)
     private readonly auditRepo: Repository<AuditLogEntity>,
     private readonly configService: ConfigService,
   ) {}
+  getDtoClass(): ClassConstructor<TDto> {
+    return this.dtoClass;
+  }
+
+  getDtoClassConstructor(): new () => TDto {
+    return this.dtoClass as unknown as new () => TDto;
+  }
+
+  getEntityClass(): new () => T {
+    return this.entityClass;
+  }
 
   private isAuditEnabled(): boolean {
     const val = this.configService.get<string>('AUDIT_LOG_ENABLED');
@@ -88,43 +104,52 @@ export abstract class BaseService<T extends BaseEntity>
     return saved;
   }
 
-  abstract getDtoClass(): Function;
-  abstract getEntityClass(): Function;
-
   getMetadata(): CrudMetadata {
     return extractCrudMetadata(this.getDtoClass(), this.getEntityClass());
   }
 
-  async search(request: PaginationRequestDto): Promise<PaginationResponse<T>> {
+  async search(
+    request: PaginationRequestDto,
+  ): Promise<PaginationResponse<Partial<TDto>>> {
     const filter = normalizeFilter(request.filter);
 
-    const page = request.page ?? 0;
-    const size = request.size ?? 10;
+    const pageNumber = request.page && request.page >= 0 ? request.page : 0;
+    const pageSize = request.size && request.size > 0 ? request.size : 10;
     const sort = request.sort ?? '';
 
     const qb = this.repo.createQueryBuilder('entity');
 
     applyFilterToQuery(qb, 'entity', filter);
 
+    // Determine sort string
     let sortString = '';
     if (typeof sort === 'string' && sort.trim() !== '') {
       sortString = sort.trim();
     } else if (typeof sort === 'object' && sort.field) {
-      const dir = sort.direction === 'DESC' ? 'DESC' : 'ASC';
-      sortString = `${sort.field},${dir}`;
+      const direction = sort.direction === 'DESC' ? 'DESC' : 'ASC';
+      sortString = `${sort.field},${direction}`;
     }
 
     applySortingToQuery(qb, 'entity', sortString);
 
-    const pageNumber = page >= 0 ? page : 0;
-    const pageSize = size > 0 ? size : 10;
-
     qb.skip(pageNumber * pageSize);
     qb.take(pageSize);
 
-    const [content, totalElements] = await qb.getManyAndCount();
+    const [entities, totalElements] = await qb.getManyAndCount();
+
+    const dtos = entities.map((entity) =>
+      plainToInstance(this.getDtoClassConstructor(), entity, {
+        excludeExtraneousValues: true,
+      }),
+    );
+
+    const filteredDtos = dtos.map((dto) =>
+      filterDtoFieldsByVisibility<TDto>(dto, this.getDtoClassConstructor()),
+    );
+
     const totalPages = Math.ceil(totalElements / pageSize);
 
+    // Build sort info
     let sortInfo: SortInfo = {
       empty: true,
       sorted: false,
@@ -142,9 +167,9 @@ export abstract class BaseService<T extends BaseEntity>
         sorted: true,
         unsorted: false,
       };
-    } else if (typeof sort === 'object') {
+    } else if (typeof sort === 'object' && sort.field) {
       sortInfo = {
-        field: sort.field ?? '',
+        field: sort.field,
         direction: sort.direction === 'DESC' ? 'DESC' : 'ASC',
         empty: false,
         sorted: true,
@@ -152,6 +177,7 @@ export abstract class BaseService<T extends BaseEntity>
       };
     }
 
+    // Pagination metadata for response
     const pageable = {
       pageNumber,
       pageSize,
@@ -162,17 +188,17 @@ export abstract class BaseService<T extends BaseEntity>
     };
 
     return {
-      content,
+      content: filteredDtos,
       pageable,
       totalPages,
       totalElements,
       last: pageNumber + 1 >= totalPages,
       size: pageSize,
       number: pageNumber,
-      sort: pageable.sort,
+      sort: sortInfo,
       first: pageNumber === 0,
-      numberOfElements: content.length,
-      empty: content.length === 0,
+      numberOfElements: filteredDtos.length,
+      empty: filteredDtos.length === 0,
     };
   }
 
@@ -198,10 +224,26 @@ export abstract class BaseService<T extends BaseEntity>
 }
 
 @Injectable()
-export class SimpleBaseService<T extends BaseEntity>
-  implements IBaseService<T>
+export abstract class SimpleBaseService<
+  T extends BaseEntity,
+  TDto extends Object,
+> implements IBaseService<T, TDto>
 {
+  protected abstract dtoClass: ClassConstructor<TDto>;
+  protected abstract entityClass: new () => T;
   constructor(protected readonly repo: Repository<T>) {}
+
+  getDtoClass(): ClassConstructor<TDto> {
+    return this.dtoClass;
+  }
+
+  getDtoClassConstructor(): new () => TDto {
+    return this.dtoClass as unknown as new () => TDto;
+  }
+
+  getEntityClass(): new () => T {
+    return this.entityClass;
+  }
 
   async create(dto: DeepPartial<T>, username: string): Promise<T> {
     const now = new Date();
@@ -239,36 +281,46 @@ export class SimpleBaseService<T extends BaseEntity>
     return this.repo.findOneOrFail({ where: { id } as any });
   }
 
-  async search(request: PaginationRequestDto): Promise<PaginationResponse<T>> {
+  async search(
+    request: PaginationRequestDto,
+  ): Promise<PaginationResponse<Partial<TDto>>> {
     const filter = normalizeFilter(request.filter);
 
-    const page = request.page ?? 0;
-    const size = request.size ?? 10;
+    const pageNumber = request.page && request.page >= 0 ? request.page : 0;
+    const pageSize = request.size && request.size > 0 ? request.size : 10;
     const sort = request.sort ?? '';
 
     const qb = this.repo.createQueryBuilder('entity');
 
     applyFilterToQuery(qb, 'entity', filter);
 
+    // Determine sort string
     let sortString = '';
     if (typeof sort === 'string' && sort.trim() !== '') {
       sortString = sort.trim();
     } else if (typeof sort === 'object' && sort.field) {
-      const dir = sort.direction === 'DESC' ? 'DESC' : 'ASC';
-      sortString = `${sort.field},${dir}`;
+      const direction = sort.direction === 'DESC' ? 'DESC' : 'ASC';
+      sortString = `${sort.field},${direction}`;
     }
 
     applySortingToQuery(qb, 'entity', sortString);
 
-    const pageNumber = page >= 0 ? page : 0;
-    const pageSize = size > 0 ? size : 10;
-
     qb.skip(pageNumber * pageSize);
     qb.take(pageSize);
 
-    const [content, totalElements] = await qb.getManyAndCount();
+    const [entities, totalElements] = await qb.getManyAndCount();
+
+    const dtos = entities.map((entity) =>
+      plainToInstance(this.getDtoClassConstructor(), entity),
+    );
+
+    const filteredDtos = dtos.map((dto) =>
+      filterDtoFieldsByVisibility<TDto>(dto, this.getDtoClassConstructor()),
+    );
+
     const totalPages = Math.ceil(totalElements / pageSize);
 
+    // Build sort info
     let sortInfo: SortInfo = {
       empty: true,
       sorted: false,
@@ -286,9 +338,9 @@ export class SimpleBaseService<T extends BaseEntity>
         sorted: true,
         unsorted: false,
       };
-    } else if (typeof sort === 'object') {
+    } else if (typeof sort === 'object' && sort.field) {
       sortInfo = {
-        field: sort.field ?? '',
+        field: sort.field,
         direction: sort.direction === 'DESC' ? 'DESC' : 'ASC',
         empty: false,
         sorted: true,
@@ -296,6 +348,7 @@ export class SimpleBaseService<T extends BaseEntity>
       };
     }
 
+    // Pagination metadata for response
     const pageable = {
       pageNumber,
       pageSize,
@@ -306,17 +359,17 @@ export class SimpleBaseService<T extends BaseEntity>
     };
 
     return {
-      content,
+      content: filteredDtos,
       pageable,
       totalPages,
       totalElements,
       last: pageNumber + 1 >= totalPages,
       size: pageSize,
       number: pageNumber,
-      sort: pageable.sort,
+      sort: sortInfo,
       first: pageNumber === 0,
-      numberOfElements: content.length,
-      empty: content.length === 0,
+      numberOfElements: filteredDtos.length,
+      empty: filteredDtos.length === 0,
     };
   }
 
@@ -327,7 +380,7 @@ export class SimpleBaseService<T extends BaseEntity>
 
   // For SimpleBaseService, you may want to throw or return null for getMetadata
   getMetadata(): CrudMetadata {
-    throw new Error('getMetadata() not implemented for SimpleBaseService');
+    return extractCrudMetadata(this.getDtoClass(), this.getEntityClass());
   }
 }
 

@@ -38,13 +38,23 @@ export class ProductDto {
     required: false,
     description: 'A brief description of the product',
     example: 'This is a sample product description.',
-    })
+  })
   description?: string;
 
   @FieldMeta({
-    label: 'flagAktif',
+    label: 'price',
     order: 2,
     grid: fieldVisibility.Active,
+    searchable: true,
+    sortable: true,
+    onCellFilter: true,
+  })
+  price: number;
+
+  @FieldMeta({
+    label: 'flagAktif',
+    order: 3,
+    grid: fieldVisibility.Disabled,
     searchable: true,
     searchOprs: [DB_FILTER_OPR_META.Eq, DB_FILTER_OPR_META.Contains],
     sortable: true,

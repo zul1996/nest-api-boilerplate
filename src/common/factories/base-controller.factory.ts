@@ -33,7 +33,7 @@ export function createBaseControllerDi<T, D extends DeepPartial<T>>(
   class GenericBaseController {
     constructor(
       @Inject(serviceToken)
-      public readonly baseService: IBaseService<T>, // ✅ pakai interface langsung
+      public readonly baseService: IBaseService<T, D>, // ✅ pakai interface langsung
     ) {}
 
     @Post()
