@@ -1,6 +1,6 @@
 import { DeepPartial } from "typeorm";
 import { BaseEntity } from "../entities/base.entity";
-import { IBaseService } from "../interface/ibase.service";
+import { IBaseService } from "../interface/ibase.interface";
 import { CurrentUser } from "src/modules/auth/decorators/current-user.decorator";
 import { Body, Delete, Get, Param, Post, Put } from "@nestjs/common";
 

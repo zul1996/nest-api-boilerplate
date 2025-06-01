@@ -14,7 +14,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs
 import { CurrentUser } from 'src/modules/auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { DeepPartial } from 'typeorm';
-import { IBaseService } from '../interface/ibase.service';
+import { IBaseService } from '../interface/ibase.interface';
 import { extractCrudMetadata } from '../utils/metadata/extract-crud-metadata.util';
 import { FilterParsed } from '../utils/filter-parser.utils';
 import { SortInfo } from '../interface/pagination-response.interface';

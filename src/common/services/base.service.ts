@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseEntity } from '../entities/base.entity';
 import { AuditLogEntity } from '../entities/audit-log';
 import { ConfigService } from '@nestjs/config';
-import { IBaseService } from '../interface/ibase.service';
+import { IBaseService } from '../interface/ibase.interface';
 import { Injectable } from '@nestjs/common';
 import { CrudMetadata } from '../interface/crud-metada.interface';
 import { extractCrudMetadata } from '../utils/metadata/extract-crud-metadata.util';

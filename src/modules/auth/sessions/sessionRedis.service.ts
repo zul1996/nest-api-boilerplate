@@ -1,8 +1,9 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Redis } from 'ioredis';
+import { ISessionService } from 'src/common/interface/isession.interface';
 
 @Injectable()
-export class SessionService {
+export class SessionRedisService implements ISessionService {
   constructor(@Inject('REDIS') private readonly redis: Redis) {}
 
   async store(

@@ -1,6 +1,6 @@
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { TokenService } from './tokens/token.service';
-import { SessionService } from './sessions/session.service';
+import { SessionRedisService } from './sessions/sessionRedis.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { Response, Request } from 'express';
@@ -8,13 +8,15 @@ import { UsersService } from '../users/users.service';
 import { plainToInstance } from 'class-transformer';
 import { SecUserAndRoleDto } from './dto/sec-user-role.dto';
 import { LoginRespDto } from './dto/login-response.dto';
+import { ISessionService } from 'src/common/interface/isession.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly tokenService: TokenService,
-    private readonly sessionService: SessionService,
+    @Inject('ISessionService')
+    private readonly sessionService: ISessionService,
   ) {}
 
   async login(
