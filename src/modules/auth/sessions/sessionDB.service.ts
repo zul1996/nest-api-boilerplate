@@ -2,8 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm'; // nanti kita buat entity ini
 import { MoreThan } from 'typeorm';
-import { SessionEntity } from 'src/common/entities/session.entity';
 import { ISessionService } from 'src/common/interface/isession.interface';
+import { SessionEntity } from 'src/common/entities/session.entity';
 
 @Injectable()
 export class SessionDBService implements ISessionService {
@@ -48,5 +48,9 @@ export class SessionDBService implements ISessionService {
 
   async remove(sessionId: string): Promise<void> {
     await this.sessionRepo.delete({ sessionId });
+  }
+
+  async removeAllByUserId(userId: string): Promise<void> {
+    await this.sessionRepo.delete({ userId });
   }
 }

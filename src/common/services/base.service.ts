@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseEntity } from '../entities/base.entity';
 import { AuditLogEntity } from '../entities/audit-log';
 import { ConfigService } from '@nestjs/config';
-import { IBaseService } from '../interface/ibase.interface';
 import { Injectable } from '@nestjs/common';
 import { CrudMetadata } from '../interface/crud-metada.interface';
 import { extractCrudMetadata } from '../utils/metadata/extract-crud-metadata.util';
@@ -17,6 +16,8 @@ import {
 import { FilterParsedDto, PaginationRequestDto } from 'src/dto/searcth.dto';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { filterDtoFieldsByVisibility } from '../decorators/field-metada.decorator';
+import { IBaseService } from '../interface/ibase.interface';
+
 
 @Injectable()
 export abstract class BaseService<T extends BaseEntity, TDto extends Object>

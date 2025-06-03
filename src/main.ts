@@ -24,6 +24,11 @@ async function bootstrap() {
     }), 
   );
 
+  if (process.env.MAINTENANCE_MODE === 'true') {
+    console.warn('⚠️ App is in maintenance mode!');
+    return;
+  }
+
   setupSwagger(app);
   await app.listen(process.env.PORT || 3000);
 }

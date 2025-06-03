@@ -30,4 +30,13 @@ export class SessionRedisService implements ISessionService {
   async remove(sessionId: string): Promise<void> {
     await this.redis.del(`refresh_token:${sessionId}`);
   }
+
+  async removeAllByUserId(userId: string): Promise<void> {
+    const sessionIds = await this.redis.smembers(`user_sessions:${userId}`);
+    if (sessionIds.length) {
+      const keys = sessionIds.map((id) => `refresh_token:${id}`);
+      await this.redis.del(...keys);
+    }
+    await this.redis.del(`user_sessions:${userId}`);
+  }
 }
